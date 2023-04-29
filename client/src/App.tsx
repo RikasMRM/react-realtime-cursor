@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setUsername, selectUsername } from "./store/userSlice";
-import { initSocket } from "./cursor/cursor";
+import { initSocket } from "./cursor/socket";
 import Login from "./components/Login";
 import CustomCanvas from "./components/CustomCanvas";
 

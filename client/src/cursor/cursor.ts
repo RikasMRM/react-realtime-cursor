@@ -1,27 +1,15 @@
-import { io, Socket } from "socket.io-client";
-import cursorImage from "../assets/cursorG.png";
-
+import { useEffect } from "react";
+import cursorImage from "../assets/cursor.png";
+import userIcons from "../assets/userIcons";
+import { getSocket } from "./socket";
 interface CursorData {
   username: string;
   x: number;
   y: number;
 }
 
-let socket: Socket;
-
-export const initSocket = (username: string) => {
-  // const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3001';
-  const serverUrl = "http://localhost:3001";
-  socket = io(serverUrl, { query: { username } });
-
-  socket.on("connect", () => {
-    console.log("Connected to the server");
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Disconnected from the server");
-  });
-};
+const cursorImg = new Image();
+cursorImg.src = cursorImage;
 
 export const subscribeToCursorUpdates = (
   canvas: HTMLCanvasElement,
@@ -38,36 +26,62 @@ export const subscribeToCursorUpdates = (
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const img = new Image();
-    img.src = cursorImage;
-    const desiredWidth = 32;
-    const desiredHeight = 32;
-    img.onload = () => {
-      ctx.drawImage(img, data.x, data.y, desiredWidth, desiredHeight);
+    // User-specific icon
+    const userIcon = new Image();
+    userIcon.src = userIcons[data.username] || ""; // Use the user-specific icon or an empty string
+    const desiredWidth = 25; // Set the desired width of the user image
+    const desiredHeight = 25; // Set the desired height of the user image
+    userIcon.onload = () => {
+      ctx.drawImage(
+        userIcon,
+        data.x + desiredWidth / 2,
+        data.y + desiredHeight / 2,
+        desiredWidth,
+        desiredHeight
+      );
     };
 
-    const textPadding = 5;
+    // Default cursor image
+    const cursorIcon = new Image();
+    cursorIcon.src = cursorImage;
+    cursorIcon.onload = () => {
+      const cursorWidth = 16; // Set the desired width of the cursor image
+      const cursorHeight = 16; // Set the desired height of the cursor image
+      ctx.drawImage(cursorIcon, data.x, data.y, cursorWidth, cursorHeight);
+    };
+
+    // Username
+    const textPadding = 8; // Adjust this value to change the distance between the image and the text
     ctx.font = "16px Arial";
     ctx.fillStyle = "black";
     ctx.fillText(
       `${data.username}`,
-      data.x + desiredWidth + textPadding,
-      data.y + desiredHeight / 2
-    );
+      data.x + desiredWidth / 3,
+      data.y + desiredHeight * 2 + textPadding
+    ); // You can adjust the x and y offsets as needed
   };
 
-  canvas.addEventListener("mousemove", (e) => {
-    const cursorData: CursorData = {
-      username,
-      x: e.clientX,
-      y: e.clientY,
-    };
+  let timerId: number | null = null;
 
-    drawCursor(cursorData);
-    socket.emit("cursor", cursorData);
-  });
+  const handleMouseMove = (e: MouseEvent) => {
+    const { clientX, clientY } = e;
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = window.setTimeout(() => {
+      const cursorData: CursorData = {
+        username,
+        x: clientX,
+        y: clientY,
+      };
+      drawCursor(cursorData);
+      getSocket().emit("cursor", cursorData);
+    }, 5);
+  };
 
-  socket.on("cursor", (data: CursorData) => {
+  canvas.addEventListener("mousemove", handleMouseMove);
+
+  getSocket().on("cursor", (data: CursorData) => {
     if (data.username !== username) {
       drawCursor(data);
     }
