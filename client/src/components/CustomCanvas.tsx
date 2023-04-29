@@ -6,7 +6,6 @@ const CustomCanvas: React.FC = () => {
 
   const updateCanvasSize = useCallback(() => {
     if (canvasRef.current) {
-      console.log(canvasRef.current);
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
     }

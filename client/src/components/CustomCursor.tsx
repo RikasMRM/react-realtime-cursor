@@ -8,7 +8,6 @@ interface CustomCursorProps {
 }
 
 const CustomCursor: React.FC<CustomCursorProps> = ({ canvasRef }) => {
-  console.log(canvasRef);
   const username = useSelector(selectUsername);
 
   const cursorUpdateEvents = useCallback(() => {
