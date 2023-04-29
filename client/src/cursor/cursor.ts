@@ -1,15 +1,20 @@
-import { useEffect } from "react";
-import cursorImage from "../assets/cursor.png";
-import userIcons from "../assets/userIcons";
+import cursorImage from "../assets/cursorG.png";
 import { getSocket } from "./socket";
+
 interface CursorData {
   username: string;
   x: number;
   y: number;
 }
 
-const cursorImg = new Image();
-cursorImg.src = cursorImage;
+const userAvatars: { [key: string]: string } = {};
+
+const avatars = [
+  "https://api.dicebear.com/6.x/adventurer/svg?seed=Lily",
+  "https://api.dicebear.com/6.x/adventurer/svg?seed=Simba",
+  "https://api.dicebear.com/6.x/adventurer/svg?seed=Socks",
+  "https://api.dicebear.com/6.x/adventurer/svg?seed=Trouble",
+];
 
 export const subscribeToCursorUpdates = (
   canvas: HTMLCanvasElement,
@@ -22,43 +27,60 @@ export const subscribeToCursorUpdates = (
     return;
   }
 
-  const drawCursor = (data: CursorData) => {
+  const cursorIcon = new Image();
+  cursorIcon.src = cursorImage;
+  const cursorWidth = 16;
+  const cursorHeight = 16;
+
+  const preloadedAvatars: { [key: string]: HTMLImageElement } = {};
+
+  avatars.forEach((avatar) => {
+    const userIcon = new Image();
+    userIcon.src = avatar;
+    preloadedAvatars[avatar] = userIcon;
+  });
+
+  const drawCursor = (data: CursorData, userAvatar: string) => {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // User-specific icon
-    const userIcon = new Image();
-    userIcon.src = userIcons[data.username] || ""; // Use the user-specific icon or an empty string
-    const desiredWidth = 25; // Set the desired width of the user image
-    const desiredHeight = 25; // Set the desired height of the user image
-    userIcon.onload = () => {
-      ctx.drawImage(
-        userIcon,
-        data.x + desiredWidth / 2,
-        data.y + desiredHeight / 2,
-        desiredWidth,
-        desiredHeight
-      );
-    };
+    // cursor image
+    const cursorX = data.x - cursorWidth / 2;
+    const cursorY = data.y - cursorHeight / 2;
+    ctx.drawImage(cursorIcon, cursorX, cursorY, cursorWidth, cursorHeight);
 
-    // Default cursor image
-    const cursorIcon = new Image();
-    cursorIcon.src = cursorImage;
-    cursorIcon.onload = () => {
-      const cursorWidth = 16; // Set the desired width of the cursor image
-      const cursorHeight = 16; // Set the desired height of the cursor image
-      ctx.drawImage(cursorIcon, data.x, data.y, cursorWidth, cursorHeight);
-    };
+    // user-specific icon
+    const userIcon = preloadedAvatars[userAvatar];
+    const desiredWidth = 28;
+    const desiredHeight = 28;
+    const userX = data.x + cursorWidth / 2;
+    const userY = data.y + cursorHeight / 2;
 
-    // Username
-    const textPadding = 8; // Adjust this value to change the distance between the image and the text
+    // round shape
+    const circleRadius = desiredWidth / 2 + 4;
+    const circleX = userX + desiredWidth / 2;
+    const circleY = userY + desiredHeight / 2;
+    ctx.beginPath();
+    ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = "#f0f0f0";
+    ctx.fill();
+
+    // a border to the round shape
+    ctx.strokeStyle = "#8c8c8c";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // user icon on top of the round shape
+    ctx.drawImage(userIcon, userX, userY, desiredWidth, desiredHeight);
+
+    // username
+    const username = data.username;
+    const textPadding = 10;
+    const usernameX = userX + desiredWidth + textPadding;
+    const usernameY = userY + desiredHeight / 2;
     ctx.font = "16px Arial";
     ctx.fillStyle = "black";
-    ctx.fillText(
-      `${data.username}`,
-      data.x + desiredWidth / 3,
-      data.y + desiredHeight * 2 + textPadding
-    ); // You can adjust the x and y offsets as needed
+    ctx.fillText(username, usernameX, usernameY);
   };
 
   let timerId: number | null = null;
@@ -69,12 +91,17 @@ export const subscribeToCursorUpdates = (
       clearTimeout(timerId);
     }
     timerId = window.setTimeout(() => {
+      if (!userAvatars[username]) {
+        userAvatars[username] =
+          avatars[Math.floor(Math.random() * avatars.length)];
+      }
+      const userAvatar = userAvatars[username];
       const cursorData: CursorData = {
         username,
         x: clientX,
         y: clientY,
       };
-      drawCursor(cursorData);
+      drawCursor(cursorData, userAvatar);
       getSocket().emit("cursor", cursorData);
     }, 5);
   };
@@ -83,7 +110,12 @@ export const subscribeToCursorUpdates = (
 
   getSocket().on("cursor", (data: CursorData) => {
     if (data.username !== username) {
-      drawCursor(data);
+      if (!userAvatars[data.username]) {
+        userAvatars[data.username] =
+          avatars[Math.floor(Math.random() * avatars.length)];
+      }
+      const userAvatar = userAvatars[data.username];
+      drawCursor(data, userAvatar);
     }
   });
 };
