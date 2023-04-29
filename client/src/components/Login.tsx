@@ -15,17 +15,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
+    <div className="container">
+      <form className="form" onSubmit={handleSubmit}>
+        <label className="label">
           Enter your username:
           <input
+            className="input"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </label>
-        <button type="submit">Login</button>
+        <button className="button" type="submit">
+          Login
+        </button>
       </form>
     </div>
   );

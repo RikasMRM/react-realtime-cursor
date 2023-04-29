@@ -5,6 +5,8 @@ import { initSocket } from "./cursor/socket";
 import Login from "./components/Login";
 import CustomCanvas from "./components/CustomCanvas";
 
+import './App.css'
+
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const username = useSelector(selectUsername);
