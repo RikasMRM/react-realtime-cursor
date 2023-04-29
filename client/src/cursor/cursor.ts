@@ -10,10 +10,12 @@ interface CursorData {
 const userAvatars: { [key: string]: string } = {};
 
 const avatars = [
-  "https://api.dicebear.com/6.x/adventurer/svg?seed=Lily",
-  "https://api.dicebear.com/6.x/adventurer/svg?seed=Simba",
-  "https://api.dicebear.com/6.x/adventurer/svg?seed=Socks",
-  "https://api.dicebear.com/6.x/adventurer/svg?seed=Trouble",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Snowball",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Toby",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Charlie",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Bear",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Nala",
+  "https://api.dicebear.com/6.x/lorelei/svg?seed=Snickers",
 ];
 
 export const subscribeToCursorUpdates = (

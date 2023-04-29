@@ -3,8 +3,7 @@ import { io, Socket } from "socket.io-client";
 let socket: Socket;
 
 export const initSocket = (username: string) => {
-  // const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3001';
-  const serverUrl = "http://localhost:3001";
+  const serverUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:3001";
   socket = io(serverUrl, { query: { username } });
 
   socket.on("connect", () => {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import cursorImage from "../assets/cursorG.png";
 
 interface LoginProps {
   onLogin: (username: string) => void;
@@ -16,9 +17,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   return (
     <div className="container">
+      <div className="logo-container">
+        <div className="cursor" style={{ display: "block" }}>
+          <img src={cursorImage} alt="cursor" />
+        </div>
+      </div>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
-          Enter your username:
+          Enter your username 
           <input
             className="input"
             type="text"
