@@ -136,4 +136,11 @@ export const subscribeToCursorUpdates = (
       drawAllCursors(); // Draw all cursors
     }
   });
+
+  getSocket().on("user-disconnected", (disconnectedUsername: string) => {
+    if (cursorDataList[disconnectedUsername]) {
+      delete cursorDataList[disconnectedUsername];
+      drawAllCursors(); // Draw all cursors
+    }
+  });
 };
