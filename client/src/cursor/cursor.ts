@@ -85,22 +85,6 @@ export const subscribeToCursorUpdates = (
     ctx.fillText(username, usernameX, usernameY);
   };
 
-  const cursorDataList: { [key: string]: CursorData } = {};
-
-  const drawAllCursors = () => {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    Object.entries(cursorDataList).forEach(([username, data]) => {
-      if (!userAvatars[username]) {
-        userAvatars[username] =
-          avatars[Math.floor(Math.random() * avatars.length)];
-      }
-      const userAvatar = userAvatars[username];
-      drawCursor(data, userAvatar);
-    });
-  };
-
   let timerId: number | null = null;
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -119,8 +103,7 @@ export const subscribeToCursorUpdates = (
         x: clientX,
         y: clientY,
       };
-      cursorDataList[username] = cursorData; // Update the cursor data for the current user
-      drawAllCursors(); // Draw all cursors
+      drawCursor(cursorData, userAvatar);
       getSocket().emit("cursor", cursorData);
     }, 5);
   };
@@ -133,8 +116,8 @@ export const subscribeToCursorUpdates = (
         userAvatars[data.username] =
           avatars[Math.floor(Math.random() * avatars.length)];
       }
-      cursorDataList[data.username] = data; // Update the cursor data for other users
-      drawAllCursors(); // Draw all cursors
+      const userAvatar = userAvatars[data.username];
+      drawCursor(data, userAvatar);
     }
   });
 };
