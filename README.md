@@ -4,7 +4,7 @@ https://react-realtime-cursor.vercel.app/
 
 ```Vite, React, Typescript, socket.io, Redux Toolkit, Recharts, Node Js, Express Js ```
 
-![My Image](users.jpg)
+![My Image](allusers.jpg)
 
     Canvas white page
     User gets into the system, ask his/her username and save it in the system
