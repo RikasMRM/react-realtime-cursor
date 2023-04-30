@@ -52,7 +52,6 @@ export const subscribeToCursorUpdates = (
     ctx.drawImage(cursorIcon, cursorX, cursorY, cursorWidth, cursorHeight);
 
     // user-specific icon
-    const userIcon = preloadedAvatars[userAvatar];
     const desiredWidth = 28;
     const desiredHeight = 28;
     const userX = data.x + cursorWidth / 2;
@@ -73,6 +72,7 @@ export const subscribeToCursorUpdates = (
     ctx.stroke();
 
     // user icon on top of the round shape
+    const userIcon = preloadedAvatars[userAvatar];
     ctx.drawImage(userIcon, userX, userY, desiredWidth, desiredHeight);
 
     // username
@@ -83,6 +83,22 @@ export const subscribeToCursorUpdates = (
     ctx.font = "16px Arial";
     ctx.fillStyle = "black";
     ctx.fillText(username, usernameX, usernameY);
+  };
+
+  const cursorDataList: { [key: string]: CursorData } = {};
+
+  const drawAllCursors = () => {
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    Object.entries(cursorDataList).forEach(([username, data]) => {
+      if (!userAvatars[username]) {
+        userAvatars[username] =
+          avatars[Math.floor(Math.random() * avatars.length)];
+      }
+      const userAvatar = userAvatars[username];
+      drawCursor(data, userAvatar);
+    });
   };
 
   let timerId: number | null = null;
@@ -97,13 +113,13 @@ export const subscribeToCursorUpdates = (
         userAvatars[username] =
           avatars[Math.floor(Math.random() * avatars.length)];
       }
-      const userAvatar = userAvatars[username];
       const cursorData: CursorData = {
         username,
         x: clientX,
         y: clientY,
       };
-      drawCursor(cursorData, userAvatar);
+      cursorDataList[username] = cursorData; // Update the cursor data for the current user
+      drawAllCursors(); // Draw all cursors
       getSocket().emit("cursor", cursorData);
     }, 5);
   };
@@ -116,8 +132,8 @@ export const subscribeToCursorUpdates = (
         userAvatars[data.username] =
           avatars[Math.floor(Math.random() * avatars.length)];
       }
-      const userAvatar = userAvatars[data.username];
-      drawCursor(data, userAvatar);
+      cursorDataList[data.username] = data; // Update the cursor data for other users
+      drawAllCursors(); // Draw all cursors
     }
   });
 };
