@@ -13,15 +13,24 @@ const io = new Server(server, {
 
 app.use(cors());
 
+const cursorDataList = {}; // Store cursor data for all connected users
+
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.handshake.query.username);
+  const username = socket.handshake.query.username;
+  console.log("User connected:", username);
+
+  // Send the current state of all cursors to the newly connected user
+  socket.emit("initial-cursors", cursorDataList);
 
   socket.on("cursor", (data) => {
-    socket.broadcast.emit("cursor", data);
+    cursorDataList[username] = data; // Update cursor data for the current user
+    socket.broadcast.emit("cursor", data); // Broadcast cursor data to other users
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.handshake.query.username);
+    console.log("User disconnected:", username);
+    delete cursorDataList[username]; // Remove cursor data for the disconnected user
+    socket.broadcast.emit("user-disconnected", username); // Notify other users about the disconnection
   });
 });
 

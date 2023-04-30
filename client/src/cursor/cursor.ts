@@ -139,4 +139,18 @@ export const subscribeToCursorUpdates = (
       drawAllCursors(); // Draw all cursors
     }
   });
+
+  getSocket().on(
+    "initial-cursors",
+    (initialCursorDataList: { [key: string]: CursorData }) => {
+      Object.entries(initialCursorDataList).forEach(([username, data]) => {
+        if (!userAvatars[username]) {
+          userAvatars[username] =
+            avatars[Math.floor(Math.random() * avatars.length)];
+        }
+        cursorDataList[username] = data;
+      });
+      drawAllCursors(); // Draw all cursors
+    }
+  );
 };
