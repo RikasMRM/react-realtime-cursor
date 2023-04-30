@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import cursorImage from "../assets/cursorG.png";
+import bgImage from "../assets/bg1.png";
 
 interface LoginProps {
   onLogin: (username: string) => void;
@@ -16,26 +16,36 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="container">
-      <div className="logo-container">
-        <div className="cursor" style={{ display: "block" }}>
-          <img src={cursorImage} alt="cursor" />
-        </div>
+    <div className="container" style={{ backgroundImage: `url(${bgImage})` }}>
+      <div className="box">
+        <form className="form" onSubmit={handleSubmit}>
+          <label
+            className="label"
+            style={{ color: "#fff", fontWeight: "bold", fontFamily: "poppins" }}
+          >
+            Enter your username :
+            <input
+              className="input"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{
+                backgroundColor: "transparent",
+                color: "#fff",
+                border: "1px solid #fff",
+                marginLeft: "20px",
+              }}
+            />
+          </label>
+          <button
+            className="button"
+            type="submit"
+            style={{ color: "#fff", fontWeight: "bold", fontFamily: "poppins" }}
+          >
+            Login
+          </button>
+        </form>
       </div>
-      <form className="form" onSubmit={handleSubmit}>
-        <label className="label">
-          Enter your username 
-          <input
-            className="input"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <button className="button" type="submit">
-          Login
-        </button>
-      </form>
     </div>
   );
 };
