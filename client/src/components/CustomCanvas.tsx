@@ -1,8 +1,11 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import CustomCursor from "./CustomCursor";
+import { useSelector } from "react-redux";
+import { selectUsername } from "../store/userSlice";
+import { subscribeToCursorUpdates } from "../cursor/cursor";
 
 const CustomCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const username = useSelector(selectUsername);
 
   const updateCanvasSize = useCallback(() => {
     if (canvasRef.current) {
@@ -20,10 +23,15 @@ const CustomCanvas: React.FC = () => {
     };
   }, [updateCanvasSize]);
 
+  useEffect(() => {
+    if (canvasRef.current && username) {
+      subscribeToCursorUpdates(canvasRef.current, username);
+    }
+  }, [canvasRef, username]);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <canvas ref={canvasRef} />
-      <CustomCursor canvasRef={canvasRef} />
     </div>
   );
 };
