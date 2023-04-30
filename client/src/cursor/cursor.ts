@@ -43,9 +43,6 @@ export const subscribeToCursorUpdates = (
   });
 
   const drawCursor = (data: CursorData, userAvatar: string) => {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     // cursor image
     const cursorX = data.x - cursorWidth / 2;
     const cursorY = data.y - cursorHeight / 2;
@@ -88,8 +85,7 @@ export const subscribeToCursorUpdates = (
   const cursorDataList: { [key: string]: CursorData } = {};
 
   const drawAllCursors = () => {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas only once before drawing all cursors
 
     Object.entries(cursorDataList).forEach(([username, data]) => {
       if (!userAvatars[username]) {
