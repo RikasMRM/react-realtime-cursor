@@ -31,8 +31,8 @@ export const subscribeToCursorUpdates = (
 
   const cursorIcon = new Image();
   cursorIcon.src = cursorImage;
-  const cursorWidth = 16;
-  const cursorHeight = 16;
+  const cursorWidth = 25;
+  const cursorHeight = 25;
 
   const preloadedAvatars: { [key: string]: HTMLImageElement } = {};
 
@@ -44,8 +44,8 @@ export const subscribeToCursorUpdates = (
 
   const drawCursor = (data: CursorData, userAvatar: string) => {
     // cursor image
-    const cursorX = data.x - cursorWidth / 2;
-    const cursorY = data.y - cursorHeight / 2;
+    const cursorX = data.x - cursorWidth / 3;
+    const cursorY = data.y - cursorHeight / 3;
     ctx.drawImage(cursorIcon, cursorX, cursorY, cursorWidth, cursorHeight);
 
     // user-specific icon
